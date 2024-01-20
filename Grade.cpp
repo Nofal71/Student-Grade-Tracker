@@ -5,12 +5,12 @@ class Grade{
  protected:
 double Total_Marks , Obtained_Marks , Percentage;
  public:
-
+string Student_Name;
    Grade(){
     Total_Marks = 0;
     Obtained_Marks = 0;
+    
    }
-
 
 double calPercentage(double Obtained_Marks , double Total_Marks){
     Percentage = (Obtained_Marks/Total_Marks)*100;
@@ -78,15 +78,18 @@ void Main(int subCount) {
     cin >> choice;
 
     if (choice == 2) {
+        cout<<"Grade Per Subject For "<<Student_Name<<" is ";
         for (int i = 0; i < subCount; i++) {
             cout << "\t\tSubject " << i + 1 << "  Grade : " << calGrade(calPercentage(Obtained[i], Total[i])) << endl;
         }
     } else if (choice == 3) {
+        cout<<"Grade Per Subject For "<<Student_Name<<" is ";
         for (int i = 0; i < subCount; i++) {
             cout << "\t\tSubject " << i + 1 << " Grade : " << calGrade(calPercentage(Obtained[i], Total[i])) << endl;
         }
         cout << "\t\tTotal Grade: " << calGrade(calPercentage(Obtained_Marks, Total_Marks)) << endl;
     } else if (choice == 1) {
+        cout<<"Total Grade For "<<Student_Name<<" is ";
         cout << "\t\tTotal Grade: " << calGrade(calPercentage(Obtained_Marks, Total_Marks)) << endl;
     }
 }
@@ -99,10 +102,13 @@ int main() {
     int count ;
     char choise;
     PerSubject object;
-   cout<<"\n\n\n";
+    Grade obj;
+    cout<<"\n\n\n";
     cout << "\t\t\t\t\t++++++++++++++++++++++++++++++++++++++" << endl;
     cout << "\t\t\t\t\t|  WELCOME TO STUDENT GRADE TRACKER  | " << endl;
     cout << "\t\t\t\t\t++++++++++++++++++++++++++++++++++++++" << endl;
+    cout << "\n\n\t\tEnter Student Name : ";
+    cin>>obj.Student_Name;
     cout << "\n\n\t\tEnter Subject Counts You Want to calculate : ";
     cin >> count;
 
@@ -127,5 +133,5 @@ y++;
 }
 
     return 0;
-    system("pause");
+    
 }
