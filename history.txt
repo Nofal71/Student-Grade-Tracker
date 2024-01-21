@@ -1,0 +1,4 @@
+Student: Nofal
+Total Marks: 10, Obtained Marks: 10, Percentage: 100%
+Subject 1 Grade: A+
+----------------------------------------
