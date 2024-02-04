@@ -107,6 +107,7 @@ public:
 int main() {
     int count;
     char choice;
+    int temp;
 
     PerSubject object;
     Grade obj;
