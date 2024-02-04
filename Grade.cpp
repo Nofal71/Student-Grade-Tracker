@@ -1,144 +1,232 @@
 #include <iostream>
-#include <string>
-
+#include <fstream>
+#include <ctime>
 using namespace std;
-
-class Grade {
-protected:
-    double Total_Marks, Obtained_Marks, Percentage;
-
+// class to store History 
+class History {
 public:
-    Grade() {
-        Total_Marks = 0;
-        Obtained_Marks = 0;
-    }
+    time_t currentTime = time(NULL);
+    string currentTimeStr = ctime(&currentTime);
 
-    double calPercentage(double Obtained_Marks, double Total_Marks) {
-        Percentage = (Obtained_Marks / Total_Marks) * 100;
-        return Percentage;
-    }
+    void SaveData(const string name, const double Percentage, const string grade) {
+        ofstream myfile("file.txt" , ios::app);
 
-    string calGrade(double Percentage) {
-        if (Percentage >= 90 && Percentage <= 100) {
-            return "A+";
-        } else if (Percentage >= 85 && Percentage < 90) {
-            return "A";
-        } else if (Percentage >= 80 && Percentage < 85) {
-            return "A-";
-        } else if (Percentage >= 75 && Percentage < 80) {
-            return "B+";
-        } else if (Percentage >= 70 && Percentage < 75) {
-            return "B";
-        } else if (Percentage >= 65 && Percentage < 70) {
-            return "B-";
-        } else if (Percentage >= 60 && Percentage < 65) {
-            return "C+";
-        } else if (Percentage >= 55 && Percentage < 60) {
-            return "C";
-        } else if (Percentage >= 50 && Percentage < 55) {
-            return "C-";
-        } else if (Percentage >= 45 && Percentage < 50) {
-            return "D";
+        if (myfile.is_open() ) {
+            
+            myfile << "Name............." << name << endl;
+            if(Percentage == 0.00){
+                
+            }else{
+            myfile << "Percentage......." << Percentage << "%"<< endl;
+            }
+            myfile << "Grade............" << grade << endl;
+            myfile << currentTimeStr<<endl;
+            myfile << ".............................." << endl;
+
         } else {
-            return "Failure";
+            cout << "Error";
         }
     }
+// function to clear history
+   void Clear_history(){
+    ofstream myfile("file.txt" , ios::trunc);
+    if(myfile.is_open()){
+        cout<<"\n\n\t\t HISTORY SUCCESSFULLY DLETED ";
+        cout<<"\t\t...................................."<<endl;
+        myfile.close();
+    }else{
+        cout<<"ERROR";
+    }
+   }
+//  functions To Display History
     
+    void View_History(){
+    ifstream myfile("file.txt");
+    string Read;
+    system("CLS");
+    cout<<"\n\n\n";
+    cout<<"\t\t\t|+++++++++++++++++++|"<<endl;
+    cout<<"\t\t\t|+++++ HISTORY  ++++|"<<endl;
+    cout<<"\t\t\t|+++++++++++++++++++|"<<endl;
+   	
+    while(getline(myfile,Read)){
+    cout<<"\n\t\t\t"<<Read<<endl;
+    }
+   }
 };
+// Get Input from user 
+class Input_Data {
+protected:
+    double* obtained;
+    double* total;
+    int Subject_Count;
+    char op;
+    double Total_Marks, Obtained_Marks;
 
-class PerSubject : public Grade {
 public:
-    string student;
-
-    void Main(int subCount) {
+    Input_Data() {
+        Subject_Count = 0;
         Total_Marks = 0;
         Obtained_Marks = 0;
-        double Total[subCount], Obtained[subCount];
-        int choice;
+        obtained = new double[Subject_Count];
+        total = new double[Subject_Count];
+    }
 
-        for (int i = 0; i < subCount; i++) {
-            cout << "\n\t\t\tSubject number " << i + 1 << endl;
-            cout << "\t\t\t\tObtained Marks : ";
-            cin >> Obtained[i];
-            cout << "\t\t\t\tOut Of  :";
-            cin >> Total[i];
+    void Welcome() {
+        cout << "\n\n\n";
+        cout << "\t\t|*****************************************************|" << endl;
+        cout << "\t\t|************  STUDENT GRADE TRACKER SYSTEM  *********|" << endl;
+        cout << "\t\t|*****************************************************|" << endl;
+        cout << "\n";
+    }
 
-            if (Obtained[i] > Total[i]) {
-                cout << "Invalid Marks Entry. Try again." << endl;
+    void select() {
+        cout << "\t\t\t   |----------------------------------|" << endl;
+        cout << "\t\t\t   | SELECT OPTIONS :                 |" << endl;
+        cout << "\t\t\t   | 1- Calculate Grades              |" << endl;
+        cout << "\t\t\t   | 2- Calculate Grade & Percentage  |" << endl;
+        cout << "\t\t\t   | 3- View History                  |" << endl;
+        cout << "\t\t\t   | 4- Delete History                |" << endl;
+        cout << "\t\t\t   |----------------------------------|" << endl;
+        cout << "\n\n\t\tEnter Choice (1-4) : ";
+    }
+//    Function to Store Marks
+    void marks() {
+        cout << "\n\t\tENTER SUBJECT COUNT :";
+        cin >> Subject_Count;
+        for (int i = 0; i < Subject_Count; i++) {
+            cout << "\n\t\tEnter Subject_" << i + 1 << " Marks " << endl;
+            cout << "\n\t\tEnter Obtained Marks : ";
+            cin >> obtained[i];
+            cout << "\t\tEnter Total Marks : ";
+            cin >> total[i];
+            if (total[i] < obtained[i]) {
+                cout << "TRY AGAIN";
                 i--;
             } else {
-                Total_Marks += Total[i];
-                Obtained_Marks += Obtained[i];
+                Total_Marks += total[i];
+                Obtained_Marks += obtained[i];
             }
         }
+    }
 
-        system("CLS");
+    ~Input_Data() {
+        delete[] obtained;
+        delete[] total;
+    }
+};
 
-        cout << "\n\n\n";
-        cout << "\tChoose Options : " << endl;
-        cout << "\t1- Total Grades " << endl;
-        cout << "\t2- Grade per Subject " << endl;
-        cout << "\t3- Marks  " << endl;
-        cout << "\t4- Result ";
-        cin >> choice;
+class Calculation : public Input_Data {
+public:
+    History obj_history;
+//     function to calculate Percentage
 
-        if (choice == 1) {
-            cout << "Total Grade For " << student << " is " << endl;
-            cout << "\t\tTotal Grade: " << calGrade(calPercentage(Obtained_Marks, Total_Marks)) << endl;
-        } else if (choice == 2) {
-            cout << "Grade Per Subject For " << student << " is " << endl;
-            for (int i = 0; i < subCount; i++) {
-                cout << "\t\tSubject " << i + 1 << "  Grade : " << calGrade(calPercentage(Obtained[i], Total[i])) << endl;
-            }
-        } else if (choice == 3) {
-            cout << "\n\t\tMarks Obtained by " << student << " is " << Obtained_Marks << "/" << Total_Marks << endl;
-        } else if (choice == 4) {
-            cout << "\n\t\tMarks Obtained by " << student << " is " << Obtained_Marks << "/" << Total_Marks;
-            cout << "\n\t\tGrade Per Subject For " << student << " is " << endl;
-            for (int i = 0; i < subCount; i++) {
-                cout << "\t\tSubject " << i + 1 << "  Grade : " << calGrade(calPercentage(Obtained[i], Total[i])) << endl;
-            }
-            cout << "\t\tTotal Grade For " << student << " is " << endl;
-            cout << "\t\tTotal Grade: " << calGrade(calPercentage(Obtained_Marks, Total_Marks)) << endl;
+        double Percentage(double obtained, double total) {
+        double percentage = (obtained / total) * 100;
+        return percentage;
+    }
+
+//     function to calculate Grade
+
+    string Grade(double percentage) {
+        string A = "A", B = "B", C = "C", D = "D", F = "F";
+        if (percentage >= 90.0) {
+            return A;
+        } else if (percentage >= 80.0) {
+            return B;
+        } else if (percentage >= 70.0) {
+            return C;
+        } else if (percentage >= 60.0) {
+            return D;
+        } else {
+            return F;
+        }
+    }
+
+    void Save_grade() {
+        string name ;
+        cout<<"\n\n\t\tPLEASE ENTER YOUR NAME : ";
+        cin>>name;
+        double Percentage = 0.00;
+        string grade = Grade(this->Percentage(Obtained_Marks, Total_Marks));
+        obj_history.SaveData(name, Percentage, grade );
+    }
+
+//     function to calculate Result
+
+   void Result(){
+     cout<<"\n\n\t\t Percentage is : "<<Percentage(Obtained_Marks,Total_Marks)<<"%";
+     cout<<"\n\t\t Grade is : "<<Grade(Percentage(Obtained_Marks,Total_Marks));
+   }
+
+   void Save_Result(){
+        string name ;
+        cout<<"\n\n\t\tPLEASE ENTER YOUR NAME : ";
+        cin>>name;
+        double Percentage = this->Percentage(Obtained_Marks,Total_Marks);
+        string grade = Grade(this->Percentage(Obtained_Marks,Total_Marks));
+        obj_history.SaveData(name, Percentage, grade );
+   }
+   
+
+};
+
+class Functionality : public Calculation {
+public:
+    void Options() {
+        cin >> op;
+        switch (op) {
+            case '1':
+                marks();
+                cout << "\n\t\tGRADE IS : " << Grade(Percentage(Obtained_Marks, Total_Marks));
+                Save_grade();
+                break;
+            case '2':
+                marks();
+                Result();
+                Save_Result();
+                break;
+            case '3':
+                obj_history.View_History();
+                break;
+            case '4':
+                obj_history.Clear_history();
+                break;
+            default:
+              cout<<"Unexpected Error please run application again ";
+              break;
         }
     }
 };
 
+
+
+
 int main() {
-    int count;
-    char choice;
 
-    PerSubject object;
-    Grade obj;
+    char Choice;
+    
+    Input_Data Obj_input;
+    Functionality obj_functionality;
+    
+    Obj_input.Welcome();
+    Obj_input.select();
+    obj_functionality.Options();
 
-    cout << "\n\n\n";
-    cout << "\t\t++++++++++++++++++++++++++++++++++++++" << endl;
-    cout << "\t\t|  WELCOME TO STUDENT GRADE TRACKER  | " << endl;
-    cout << "\t\t++++++++++++++++++++++++++++++++++++++" << endl;
-    cout << "\n\n\t\tEnter Student Name : ";
-    cin >> object.student;
-    cout << "\n\tEnter Subject Counts You Want to calculate : ";
-    cin >> count;
-
-    object.Main(count);
-
-    int y = 1;
-    while (y > 0) {
-        
-        cout << "Again Calculate (y/n) : ";
-        cin >> choice;
-        
-        if (choice == 'y') {
-        	system("CLS");
-            cout << "Enter Subject Counts You Want to calculate : ";
-            cin >> count;
-            object.Main(count);
-        } else {
-            break;
-        }
-
-        y++;
+    while(true){
+    cout<<"\n\n\t\t Calculate Again (y / n) : ";
+    cin>>Choice;
+    if(Choice == 'y'){
+    system("CLS");
+    Obj_input.Welcome();
+    Obj_input.select();
+    obj_functionality.Options();
+    }else if(Choice == 'n') {
+        break;
+    }else{
+        cout<<"Enter either y or n ";
+        break;
     }
-
+    }
     return 0;
 }
